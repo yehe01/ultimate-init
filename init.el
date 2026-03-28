@@ -1,509 +1,120 @@
-;; package.el
 (require 'package)
-(add-to-list 'package-archives
-             '("marmalade" . "http://marmalade-repo.org/packages/") t)
-(add-to-list 'package-archives
-             '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("elpa"  . "https://elpa.gnu.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 (package-initialize)
 
-
-;; power-line
-(powerline-center-theme)
-
-
-;; yascroll
-(global-yascroll-bar-mode)
-
-
-;; rainbow-delimeter
-(rainbow-delimiters-mode t)
-
-
-;; fix the mac PATH variable
-(defun ome-set-exec-path-from-shell-PATH ()
-  (let ((path-from-shell (shell-command-to-string "zsh -i -c 'echo $PATH'")))
-    (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
-
-(when (eq system-type 'darwin)
-  (when window-system (ome-set-exec-path-from-shell-PATH)))
-
-
-;; goto-last-change
-(global-set-key (kbd "C-x C-\\") 'goto-last-change)
-
-;; helm
-(require 'helm-config)
-(setq helm-input-idle-delay 0.2)
-(helm-mode t)
-(global-set-key (kbd "C-c <SPC>") 'helm-all-mark-rings)
-(global-set-key (kbd "C-x c o") 'helm-occur)
-(global-set-key (kbd "C-x C-/") 'helm-find)
-(global-set-key (kbd "M-g s") 'helm-do-grep)
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "C-x C-b") 'helm-buffers-list)
-(global-set-key (kbd "C-x C-r") 'helm-recentf)
-
-
-;; expand-region
-(global-set-key (kbd "M-i") 'er/expand-region)
-(global-set-key (kbd "M-S-<up>") 'er/mark-inside-quotes)
-(global-set-key (kbd "M-S-<down>") 'er/mark-inside-pairs)
-
-
-;; undo-tree
-(global-undo-tree-mode)
-
-
-;; auto-complete
-(require 'auto-complete-config)
-(ac-config-default)
-(global-auto-complete-mode t)
-(setq ac-dwim t)
-(setq ac-use-menu-map t)
-(setq ac-quick-help-delay 1)
-(setq ac-quick-help-height 60)
-(setq ac-auto-start 2)
-(setq ac-candidate-menu-min 2)
-
-;; git-gutter
-(setq git-gutter:window-width 2)
-(global-git-gutter-mode t)
-(setq git-gutter:lighter " G-+")
-(setq git-gutter:modified-sign "~ ")
-(setq git-gutter:added-sign "+ ")
-(setq git-gutter:deleted-sign "- ")
-(setq git-gutter:unchanged-sign nil)
-(global-set-key (kbd "C-c n")
-                'git-gutter:next-hunk)
-(global-set-key (kbd "C-c l")
-                'git-gutter:previous-hunk)
-(global-set-key (kbd "C-c h")
-                'git-gutter:stage-hunk)
-
-
-;; window-number
-(autoload 'window-number-mode "window-number" t)
-(window-number-mode 1)
-(autoload 'window-number-meta-mode
-  "window-number" t)
-(window-number-meta-mode 1)
-
-
-;; elisp
-(defun ome-remove-elc-on-save ()
-  "If you're saving an elisp file, likely the .elc is no longer valid."
-  (make-local-variable 'after-save-hook)
-  (add-hook 'after-save-hook
-            (lambda ()
-              (if (file-exists-p (concat buffer-file-name "c"))
-                  (delete-file (concat buffer-file-name "c"))))))
-
-(add-hook 'emacs-lisp-mode-hook 'ome-remove-elc-on-save)
-
-(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
-; (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-; (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
-
-;; elisp-slime-nav
-(add-hook 'emacs-lisp-mode-hook 'turn-on-elisp-slime-nav-mode)
-
-
-; ;; ace-jump-mode
-(require 'ace-jump-mode)
-(setq ace-jump-mode-submode-list
-      '(ace-jump-char-mode
-        ace-jump-line-mode))
-(global-set-key (kbd "C-o") 'ace-jump-mode)
-(ace-jump-mode-enable-mark-sync)
-
-
-;;; Customized configuration
-
- ;; mac specific settings
-
-(setq mac-option-key-is-meta nil)
-(setq mac-command-key-is-meta t)
-(setq mac-command-modifier 'meta)
-(setq mac-option-modifier nil)
-
-;; key-bindings
-
-(define-key global-map (kbd "C-+") 'text-scale-increase)
-(define-key global-map (kbd "C--") 'text-scale-decrease)
-
-(global-set-key (kbd "C-c o") 'occur)
-(global-set-key (kbd "M-h") 'help-command)
-(global-set-key (kbd "M-/") 'comment-or-uncomment-region)
-
-(define-key lisp-mode-shared-map (kbd "RET") 'reindent-then-newline-and-indent)
-
-; (global-set-key (kbd "C-c b") 'winner-undo)
-; (global-set-key (kbd "C-c f") 'winner-redo)
-
-; ;;; language specific setting
-
-;;emacs-lisp shortcuts
-(global-set-key (kbd "C-c C-b") 'eval-buffer)
-(global-set-key (kbd "C-c C-p") 'eval-print-last-sexp)
-(global-set-key (kbd "C-c C-r") 'eval-region)
-(global-set-key (kbd "C-j") 'eval-last-sexp)
-
-
-;;fast vertical naviation
-(global-set-key  (kbd "M-U") (lambda () (interactive) (forward-line -10)))
-(global-set-key  (kbd "M-D") (lambda () (interactive) (forward-line 10)))
-(global-set-key  (kbd "M-p") 'outline-previous-visible-heading)
-(global-set-key  (kbd "M-n") 'outline-next-visible-heading)
-
-;; Dired
-(defun dired-back-to-top ()
-  (interactive)
-  (beginning-of-buffer)
-  (dired-next-line 4))
-
-(define-key dired-mode-map
-  (vector 'remap 'beginning-of-buffer) 'dired-back-to-top)
-
-(defun dired-jump-to-bottom ()
-  (interactive)
-  (end-of-buffer)
-  (dired-next-line -1))
-
-(define-key dired-mode-map
-  (vector 'remap 'end-of-buffer) 'dired-jump-to-bottom)
-
-(global-set-key (kbd "M-j")
-                (lambda ()
-                  (interactive)
-                  (join-line -1)))
-
-(defun move-line-down ()
-  (interactive)
-  (let ((col (current-column)))
-    (save-excursion
-      (forward-line)
-      (transpose-lines 1))
-    (forward-line)
-    (move-to-column col)))
-
-(defun move-line-up ()
-  (interactive)
-  (let ((col (current-column)))
-    (save-excursion
-      (forward-line)
-      (transpose-lines -1))
-    (move-to-column col)))
-
-(global-set-key (kbd "<C-M-down>") 'move-line-down)
-(global-set-key (kbd "<C-M-up>") 'move-line-up)
-
-;;mimic vim
-;;Turn off cua mode first
-(defun open-line-below ()
-  (interactive)
-  (end-of-line)
-  (newline)
-  (indent-for-tab-command))
-
-(defun open-line-above ()
-  (interactive)
-  (beginning-of-line)
-  (newline)
-  (forward-line -1)
-  (indent-for-tab-command))
-
-(global-set-key (kbd "<C-return>") 'open-line-below)
-(global-set-key (kbd "<C-S-return>") 'open-line-above)
-
-(defun live-show-messages ()
-  (interactive)
-  (popwin:display-buffer "*Messages*"))
-
-(global-set-key (kbd "C-c s m") 'live-show-messages)
-
-; ;;scroll other window
-(global-set-key (kbd "C-M-]") 'scroll-other-window)
-(global-set-key (kbd "C-M-[") 'scroll-other-window-down)
-
-; (global-set-key (kbd "M-'") 'repeat)
-; (global-set-key (kbd "C-x M-f") 'ido-find-file-other-window)
-; (global-set-key (kbd "C-c y") 'bury-buffer)
-; (global-set-key (kbd "C-x C-b") 'ibuffer)
-
-
-(defun live-lisp-describe-thing-at-point ()
-  "Show the documentation of the Elisp function and variable near point.
-   This checks in turn:
-     -- for a function name where point is
-     -- for a variable name where point is
-     -- for a surrounding function call"
-  (interactive)
-  (let (sym)
-    ;; sigh, function-at-point is too clever.  we want only the first half.
-    (cond ((setq sym (ignore-errors
-                       (with-syntax-table emacs-lisp-mode-syntax-table
-                         (save-excursion
-                           (or (not (zerop (skip-syntax-backward "_w")))
-                               (eq (char-syntax (char-after (point))) ?w)
-                               (eq (char-syntax (char-after (point))) ?_)
-                               (forward-sexp -1))
-                           (skip-chars-forward "`'")
-                           (let ((obj (read (current-buffer))))
-                             (and (symbolp obj) (fboundp obj) obj))))))
-           (describe-function sym))
-          ((setq sym (variable-at-point)) (describe-variable sym)))))
-
-(define-key lisp-mode-shared-map (kbd "M-RET") 'live-lisp-describe-thing-at-point)
-
-; ;;imenu
-; (global-set-key (kbd "C-.") 'imenu)
-
-; ;;bookmark
-; (global-set-key (kbd "<f8>") 'bookmark-set)
-; (global-set-key (kbd "<f9>") 'bookmark-jump)
-; (global-set-key (kbd "<f7>") 'bookmark-bmenu-list)
-
-; ;;idomenu
-; (global-set-key (kbd "C-c M-b") 'find-file-at-point)
-
-; ;;candidates
-; (global-set-key (kbd "C-c j p") 'quick-jump-go-back)
-; (global-set-key (kbd "C-c j b") 'quick-jump-go-back)
-; (global-set-key (kbd "C-c j m") 'quick-jump-push-marker)
-; (global-set-key (kbd "C-c j n") 'quick-jump-go-forward)
-; (global-set-key (kbd "C-c j f") 'quick-jump-go-forward)
-; (global-set-key (kbd "C-c j c") 'quick-jump-clear-all-marker)
-
-; (global-set-key (kbd "C-c d f") 'diff-buffer-with-file)
-
-
-
-;; misc
-(setq-default save-place t)
-(setq save-place-file (concat user-emacs-directory ".saved-places"))
-(require 'saveplace)
-
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
-(require 'uniquify)
-
-;; use aspell instead of ispell
-(setq ispell-program-name "aspell"
-      ispell-extra-args '("--sug-mode=ultra"))
-
-(set-language-environment "UTF-8")
-(setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
-(fset 'yes-or-no-p 'y-or-n-p)
-(setq require-final-newline t)
-(setq next-line-add-newlines nil)
-(setq ring-bell-function 'ignore)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-;; enable to support navigate in camelCase words
-(global-subword-mode t)
-; ;; hide startup splash screen
-; (setq inhibit-startup-screen t)
-
-(setq-default major-mode 'text-mode)
-
-
-
-;; Auto refresh buffers
-(global-auto-revert-mode 1)
-
-;; Also auto refresh dired, but be quiet about it
-(setq global-auto-revert-non-file-buffers t)
-(setq auto-revert-verbose nil)
-
-
-
-;;; GUI
-
-;; popwin
-(require 'popwin)
-(popwin-mode 1)
-
-(push '("*Messages*" :noselect t :height 30)
-      popwin:special-display-config)
-(push '("*Buffer List*")
-      popwin:special-display-config)
-
-
-;; remove useless gui
-(dolist (mode '(tool-bar-mode scroll-bar-mode))
-  (when (fboundp mode) (funcall mode -1)))
-
-;; show parenthesis match
-(show-paren-mode 1)
-(setq show-paren-style 'parenthesis)
-
-;; auto-fill mode
-(setq-default fill-column 79)
-(add-hook 'text-mode-hook 'turn-on-auto-fill)
-(add-hook 'prog-mode-hook 'turn-on-auto-fill)
-
-;; font
-(if (member "Monaco" (font-family-list))
-    (set-face-attribute
-     'default nil :font "Monaco 12"))
-
-
-;;;; Mode hooks
-
-;; outline-mode
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (outline-minor-mode t)))
-
-; ;; winner undo and redo
-; (when (fboundp 'winner-mode)
-;   (winner-mode 1))
-
-;; primitive backup-dir
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
-
-; ;; eshell
-; (add-hook 'eshell-mode-hook
-;           (lambda ()
-;             (add-to-list 'ac-sources 'ac-source-pcomplete)))
-
-; (add-to-list 'ac-modes 'eshell-mode)
-; (add-hook 'eshell-mode-hook 'turn-on-eldoc-mode)
-; (add-hook 'eshell-mode-hook 'ac-emacs-lisp-mode-setup)
-
-; ;;; shell-mode settings
-
-; (unless (eq system-type 'windows-nt)
-;   (setq explicit-shell-file-name "/bin/bash")
-;   (setq shell-file-name "/bin/bash"))
-; ;; always insert at the bottom
-; (setq comint-scroll-to-bottom-on-input t)
-; (setq comint-input-ignoredups t)
-; ; what to run when press enter on a line above the current prompt
-; (setq comint-get-old-input (lambda () ""))
-; ;; set lang to enable Chinese display in shell-mode
-; (setenv "LANG" "en_US.UTF-8")
-
-
-
-(setq recentf-save-file (concat user-emacs-directory ".recentf"))
-(recentf-mode t)
-(setq recentf-max-saved-items 50)
-
-
-(setq sgml-basic-offset 4)
-
-; ;;; flycheck
-; (defun flycheck-setup ()
-;   (eval-after-load 'flycheck
-;     '(setq flycheck-checkers (delq 'emacs-lisp-checkdoc flycheck-checkers)))
-;   (add-hook 'prog-mode-hook 'flycheck-mode))
-
-; (flycheck-setup)
-
-; (require 'dired-x)
-; (setq-default dired-omit-files-p t)
-; (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$"))
-
-
-(defun backward-kill-line (arg)
-  "Kill ARG lines backward."
-  (interactive "p")
-  (kill-line (- 1 arg)))
-
-(global-set-key (kbd "M-k") 'backward-kill-line)
-
-
-(setq ad-redefinition-action 'accept)
-(require 'moe-theme)
-(load-theme 'moe-dark t)
-
-(require 'ac-geiser)
-(add-hook 'geiser-mode-hook 'ac-geiser-setup)
-(add-hook 'geiser-repl-mode-hook 'ac-geiser-setup)
-(eval-after-load "auto-complete"
-  '(add-to-list 'ac-modes 'geiser-repl-mode))
-
-(setq blink-cursor-blinks 5)
-(blink-cursor-mode 1)
-(setq-default cursor-type 'bar)
-
-(dolist (hook '(text-mode-hook))
-  (add-hook hook (lambda () (flyspell-mode 1))))
-
-(global-set-key (kbd "<f8>") 'ispell-word)
-
-(defun flyspell-check-next-highlighted-word ()
-  "Custom function to spell check next highlighted word"
-  (interactive)
-  (flyspell-goto-next-error)
-  (ispell-word))
-(global-set-key (kbd "M-<f8>") 'flyspell-check-next-highlighted-word)
-
-
-
-;;;; Scheme config
-
-(autoload 'paredit-mode "paredit"
-  "Minor mode for pseudo-structurally editing Lisp code."
-  t)
-
-(require 'cmuscheme)
-(setq scheme-program-name "scheme")
-
-(defun scheme-proc ()
-  "Return the current Scheme process, starting one if necessary."
-  (unless (and scheme-buffer
-               (get-buffer scheme-buffer)
-               (comint-check-proc scheme-buffer))
-    (save-window-excursion
-      (run-scheme scheme-program-name)))
-  (or (scheme-get-process)
-      (error "No current process. See variable `scheme-buffer'")))
-
-(defun scheme-split-window ()
-  (cond
-   ((= 1 (count-windows))
-    (delete-other-windows)
-    (split-window-vertically (floor (* 0.68 (window-height))))
-    (other-window 1)
-    (switch-to-buffer "*scheme*")
-    (other-window 1))
-   ((not (find "*scheme*"
-               (mapcar (lambda (w) (buffer-name (window-buffer w)))
-                       (window-list))
-               :test 'equal))
-    (other-window 1)
-    (switch-to-buffer "*scheme*")
-    (other-window -1))))
-
-(defun scheme-send-last-sexp-split-window ()
-  (interactive)
-  (scheme-split-window)
-  (scheme-send-last-sexp))
-
-(defun scheme-send-definition-split-window ()
-  (interactive)
-  (scheme-split-window)
-  (scheme-send-definition))
-
-(add-hook 'scheme-mode-hook
-  (lambda ()
-    (paredit-mode 1)
-    (define-key scheme-mode-map (kbd "<f5>") 'scheme-send-last-sexp-split-window)
-    (define-key scheme-mode-map (kbd "<f6>") 'scheme-send-definition-split-window)))
-
+;; Install use-package if not present
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
+(setq use-package-always-ensure t)
+
+;;; --- Visuals & Theme ---
+(use-package nerd-icons)
+
+(use-package moe-theme
+  :config
+  (load-theme 'moe-dark t))
+
+(use-package powerline
+  :config
+  (powerline-default-theme))
+
+(use-package yascroll
+  :config
+  (global-yascroll-bar-mode 1))
+
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;;; --- Navigation & Editing ---
+(use-package goto-last-change
+  :bind ("C-x C-/" . goto-last-change))
+
+(use-package helm
+  :init
+  (setq helm-mode-fuzzy-match t
+        helm-completion-in-region-fuzzy-match t)
+  :config
+  (helm-mode 1)
+  :bind (("M-x" . helm-M-x)
+         ("C-x C-f" . helm-find-files)
+         ("C-x b" . helm-mini)))
+
+(use-package elscreen
+  :init
+  ;; Prevent elscreen from trying to load w3m and wl helpers
+  (setq elscreen-display-tab nil) 
+  (setq elscreen-tab-display-control nil)
+  :config
+  (elscreen-start))
+;;; --- File Management ---
+(use-package dirvish
+  :init
+  (dirvish-override-dired-mode)
+  :custom
+  (dirvish-mode-line-format
+   '(:left (sort symlink) :right (omitted index)))
+  (dirvish-attributes '(file-size vc-state git-msg nerd-icons))
+  ;; Terminal-friendly settings
+  (dirvish-use-header-line nil)
+  (dirvish-use-mode-line t)
+  :config
+  (dirvish-peek-mode) ; Preview files in the right pane
+  (setq dirvish-layout-config '((0 0.3 0.4 0.3))) ; 3-column Miller columns
+
+  :bind
+  (("C-x d" . dirvish)
+ :map dirvish-mode-map
+ ("a"   . dirvish-quick-access)
+ ("f"   . dirvish-file-info-menu)
+ ("y"   . dirvish-yank-menu)
+ ("s"   . dirvish-quicksort)
+ ("TAB" . dirvish-subtree-toggle)
+ ("M-t" . dirvish-layout-toggle)
+ ("M-b" . dirvish-history-jump)
+ ("M-s" . dirvish-setup-menu)
+ ("M-e" . dirvish-emerge-menu)))
+
+;;; --- Language Specifics ---
+(use-package paredit
+  :hook ((emacs-lisp-mode lisp-mode scheme-mode) . enable-paredit-mode))
+
+(use-package exec-path-from-shell
+  :if (memq window-system '(mac ns x))
+  :config
+  (exec-path-from-shell-initialize))
+
+;;; --- Custom Settings ---
+(setq inhibit-startup-screen t)
+(setq make-backup-files nil)
+(delete-selection-mode 1)
+
+(defun my/fix-terminal-transparency (&optional frame)
+  "Remove background color to let terminal transparency show through."
+  (unless (display-graphic-p frame)
+    (set-face-background 'default "unspecified-bg" frame)
+    (set-face-background 'fringe "unspecified-bg" frame)))
+
+;; Apply to the current session
+(my/fix-terminal-transparency)
+
+;; Apply to any new frames (like if you use emacsclient)
+(add-hook 'after-make-frame-functions 'my/fix-terminal-transparency)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(helm-M-x-fuzzy-match t)
- '(helm-buffers-fuzzy-matching t)
- '(helm-recentf-fuzzy-match nil))
+ '(package-selected-packages nil))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
